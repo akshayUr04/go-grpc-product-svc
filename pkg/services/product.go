@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/akshayUr04/go-grpc-product-svc/pkg/db"
@@ -15,6 +16,8 @@ type Server struct {
 }
 
 func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
+	fmt.Println("productservice : CreateProduct")
+
 	var product models.Product
 
 	product.Name = req.Name
@@ -35,7 +38,11 @@ func (s *Server) CreateProduct(ctx context.Context, req *pb.CreateProductRequest
 }
 
 func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindOneResponse, error) {
+	fmt.Println("productservice : find one")
+
 	var product models.Product
+
+	fmt.Println(req, "req")
 
 	if result := s.H.DB.First(&product, req.Id); result.Error != nil {
 		return &pb.FindOneResponse{
@@ -43,6 +50,8 @@ func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindO
 			Error:  result.Error.Error(),
 		}, nil
 	}
+
+	fmt.Println(product, "product")
 
 	data := &pb.FindOneData{
 		Id:    product.Id,
@@ -58,6 +67,8 @@ func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindO
 }
 
 func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest) (*pb.DecreaseStockResponse, error) {
+	fmt.Println("productservice : DecreaseStock")
+
 	var product models.Product
 
 	if result := s.H.DB.First(&product, req.Id); result.Error != nil {
