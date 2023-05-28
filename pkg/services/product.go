@@ -48,7 +48,7 @@ func (s *Server) FindOne(ctx context.Context, req *pb.FindOneRequest) (*pb.FindO
 		return &pb.FindOneResponse{
 			Status: http.StatusNotFound,
 			Error:  result.Error.Error(),
-		}, nil
+		}, result.Error
 	}
 
 	fmt.Println(product, "product")
@@ -90,11 +90,11 @@ func (s *Server) DecreaseStock(ctx context.Context, req *pb.DecreaseStockRequest
 	if product.Stock <= 0 {
 		return &pb.DecreaseStockResponse{
 			Status: http.StatusConflict,
-			Error:  "stock alredy decreased",
-		}, nil
+			Error:  "stock is zero",
+		}, fmt.Errorf("stock is zero")
 	}
 
-	product.Stock = product.Stock - 1
+	product.Stock = product.Stock - req.Qty
 	s.H.DB.Save(&product)
 
 	log.OrderId = req.OrderId
